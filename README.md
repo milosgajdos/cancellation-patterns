@@ -7,7 +7,7 @@ Rust task cancellation patterns
 
 See the examples below or run them yourself. All the code is in [src](./src/bin)
 
-# Drop task JoinHandle
+# Aborting tasks
 
 ```rust
 use tokio::time::{self, Duration};
@@ -16,13 +16,14 @@ use tokio::time::{self, Duration};
 async fn main() {
     let handle = tokio::spawn(async {
         // do some work
-        tokio::time::sleep(Duration::from_secs(10)).await;
+        tokio::time::sleep(Duration::from_secs(1)).await;
         println!("Task completed");
     });
 
     // Cancel the task after 100 milliseconds
     time::sleep(Duration::from_millis(100)).await;
-    drop(handle);
+    handle.abort();
+    time::sleep(Duration::from_secs(2)).await;
 
     println!("Task was cancelled");
 }
