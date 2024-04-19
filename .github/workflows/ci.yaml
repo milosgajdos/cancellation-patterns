@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - "*"
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  ci:
+    name: Run CI
+    runs-on: ubuntu-latest
+    env:
+      CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
+
+    steps:
+      - name: check out code
+        uses: actions/checkout@v4
+
+      - name: cargo version and environment
+        id: vars
+        run: |
+          printf "Using cargo at: $(which cargo)\n"
+          printf "cargo version: $(cargo version)\n"
+
+      - name: setup rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: run build
+        run: |
+          cargo check --all-targets --verbose
+          cargo build --all-targets --release --verbose
+
+      - name: run tests
+        run: cargo test --all-targets --verbose
+
+      - name: publish crate
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          cargo publish --token $CRATES_TOKEN
