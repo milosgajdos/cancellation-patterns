@@ -1,5 +1,5 @@
 [package]
-name = "rust-repo-template"
+name = "cancellation-patterns"
 version = "0.1.0"
 edition = "2021"
 authors = ["milosgajdos <milosthegajdos@gmail.com>"]
